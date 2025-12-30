@@ -1,4 +1,5 @@
 #include "../exercise.h"
+#include <string.h>
 
 // READ: 左值右值（概念）<https://learn.microsoft.com/zh-cn/cpp/c-language/l-value-and-r-value-expressions?view=msvc-170>
 // READ: 左值右值（细节）<https://zh.cppreference.com/w/cpp/language/value_category>
@@ -10,26 +11,48 @@
 // READ: 运算符重载 <https://zh.cppreference.com/w/cpp/language/operators>
 
 class DynFibonacci {
+    int capacity;
     size_t *cache;
     int cached;
 
 public:
     // TODO: 实现动态设置容量的构造器
-    DynFibonacci(int capacity): cache(new ?), cached(?) {}
+    DynFibonacci(int capacity):capacity(capacity), cache(new size_t[capacity]), cached(2) {
+        cache[0]=0;
+        cache[1]=1;
+    }
 
     // TODO: 实现移动构造器
-    DynFibonacci(DynFibonacci &&) noexcept = delete;
+    DynFibonacci(DynFibonacci && right) noexcept{
+        capacity=right.capacity;
+        cache=right.cache;
+        right.cache=nullptr;
+        cached=right.cached;
+    };
 
     // TODO: 实现移动赋值
     // NOTICE: ⚠ 注意移动到自身问题 ⚠
-    DynFibonacci &operator=(DynFibonacci &&) noexcept = delete;
+    DynFibonacci &operator=(DynFibonacci &&right) noexcept {
+        if(this==&right ){
+            return *this;
+        } 
+        capacity=right.capacity;
+        cached=right.cached;
+        delete[] cache;
+        cache=right.cache;
+        right.cache=nullptr;
+        return *this;
+
+    };
 
     // TODO: 实现析构器，释放缓存空间
-    ~DynFibonacci();
+    ~DynFibonacci(){
+        delete[] cache;
+    };
 
     // TODO: 实现正确的缓存优化斐波那契计算
     size_t operator[](int i) {
-        for (; false; ++cached) {
+        for (; cached<=i; ++cached) {
             cache[cached] = cache[cached - 1] + cache[cached - 2];
         }
         return cache[i];
@@ -60,7 +83,7 @@ int main(int argc, char **argv) {
 
     fib0 = std::move(fib1);
     fib0 = std::move(fib0);
-    ASSERT(fib0[10] == 55, "fibonacci(10) should be 55");
+    ASSERT(fib0[10] == 55, "fibonacci(11) should be 55");
 
     return 0;
 }

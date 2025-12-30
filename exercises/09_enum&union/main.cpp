@@ -37,6 +37,8 @@ ColorEnum convert_by_pun(Color c) {
 
     TypePun pun;
     // TODO: 补全类型双关转换
+    pun.c = c;          // 写入 Color
+    return pun.e;       // 按 ColorEnum 解释同一块内存（UB，但演示目的）
 
     return pun.e;
 }
